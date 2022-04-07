@@ -1,3 +1,6 @@
+# Streaming Dataset Analysis
+Further analysis of the Streaming Dataset paper
+
 ## Running the code
 
 ```bash
@@ -6,4 +9,3 @@ $ source myvenv/bin/activate
 $ pip install -r requirements.txt
 $ python main.py
 ```
-

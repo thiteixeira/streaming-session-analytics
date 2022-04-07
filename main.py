@@ -1,4 +1,6 @@
 import pandas as pd
+import seaborn as sns
+import matplotlib.pyplot as plt
 
 BASE_URL = 'https://raw.githubusercontent.com/brightcove/streaming-dataset/main/datasets/'
 HEADER_LIST = ['session', 'seq', 'device_type', 'device_os', 'browser', 
@@ -9,8 +11,28 @@ HEADER_LIST = ['session', 'seq', 'device_type', 'device_os', 'browser',
               'video_seconds_viewed', 'forward_buffer_seconds', 
               'rebuffering_seconds', 'rebuffering_count', 
               'media_bytes_transferred', 'measured_bps']
+
+# Number of files to pull for each event. Can reduce if you want to test
 EVENT_1 = 30
-EVENT_2 = 13
+EVENT_2 = 2 #13
+
+def plot_sessions(df: pd.DataFrame):
+    sns.histplot(data=df, y='seq_s', hue='session')
+    plt.show()
+
+def get_session_info(df: pd.DataFrame):
+    unique_sessions = df['session'].nunique()
+    print(f'Number of unique sessions: {unique_sessions}')
+    max_session_length = df['session'].max()
+    print(f'Max session length: {max_session_length}')
+
+    session_df = df[['session', 'seq']]
+    # each seq number corresponds to 10 seconds that is sent from the player
+    session_df['seq'] = df['seq'].apply(lambda x: x * 10)
+    session_df.rename(columns={"seq": "seq_s"}, inplace=True)
+    
+    # TODO: drop sessions with duration less than 50 seqs
+    plot_sessions(session_df)
 
 def fetch_data(event_number: str) -> pd.DataFrame:
     NUM_FILES = EVENT_1 if event_number == 1 else EVENT_2
@@ -21,11 +43,8 @@ def fetch_data(event_number: str) -> pd.DataFrame:
         names=HEADER_LIST, skiprows=skiprows)], ignore_index=True)
     return df
 
-def get_session_length(df):
-    # get session duration based on seq
-    # plot cdf of session duration
-    pass
-
 
 if __name__ == "__main__":
     df = fetch_data(2)
+    get_session_info(df)
+    

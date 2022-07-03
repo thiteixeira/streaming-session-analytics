@@ -99,7 +99,13 @@ if __name__ == "__main__":
     event_parser.add_argument(
         "--analysis",
         dest="analysis",
-        choices=["bitrate", "fluctuation", "rate_rebuffering", "buffering_ratio"],
+        choices=[
+            "all",
+            "bitrate",
+            "fluctuation",
+            "rate_rebuffering",
+            "buffering_ratio",
+        ],
         required=True,
         help="which analysis to run",
     )

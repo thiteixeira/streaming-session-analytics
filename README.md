@@ -40,6 +40,8 @@ $ ./main.py --help
 
 Calculated as the average bitrate of the requested renditions over time.
 
+![CDF of Rendition Bitrate](./assets/cdf_bitrate.png)
+
 ### Rate of Fluctuations
 
 How often (per minute) the rendition changes

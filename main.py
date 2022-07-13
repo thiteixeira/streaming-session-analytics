@@ -5,12 +5,14 @@ import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
 
+pd.set_option("display.max_rows", None)
 sns.set_theme(style="whitegrid")
 
 EVENT_1 = 38
 EVENT_2 = 12
 EVENT_3 = 1
 EVENT_4 = 4
+MIN_SESSION_DURATION = 6
 BASE_URL = (
     "https://raw.githubusercontent.com/brightcove/streaming-dataset/main/datasets/"
 )
@@ -94,7 +96,22 @@ def analyze_bitrate(event_df: pd.DataFrame) -> None:
 
 
 def analyze_fluctuation(event_df: pd.DataFrame) -> None:
-    pass
+    """Compute the number of rendition changes per minute"""
+
+    print("Analyzing fluctuation ...")
+    df = (
+        event_df[["session", "seq", "rendition_width"]]
+        .groupby("session")
+        # Filter on session duration >= 6 (one minute)
+        .filter(lambda x: x["seq"].count() >= MIN_SESSION_DURATION)
+        .reset_index(drop=True)
+    )
+
+    # Compute the fluctuation rate per session id
+
+    # Plot the CDF of the fluctuation rate
+
+    print(df.head(n=150))
 
 
 def analyze_rate_rebuffering(event_df: pd.DataFrame) -> None:
@@ -140,11 +157,11 @@ if __name__ == "__main__":
     # TODO: cache events to pickle files in /tmp and move analysis to a separate file
     event_df = load_data(num_of_files=args.num_files, event_num=args.event_number)
 
-    if args.analysis == "bitrate" or "all":
+    if args.analysis in ["bitrate", "all"]:
         analyze_bitrate(event_df)
-    elif args.analysis == "fluctuation" or "all":
+    elif args.analysis in ["fluctuation", "all"]:
         analyze_fluctuation(event_df)
-    elif args.analysis == "rate_rebuffering" or "all":
+    elif args.analysis in ["rate_rebuffering", "all"]:
         analyze_rate_rebuffering(event_df)
-    elif args.analysis == "buffering_ratio" or "all":
+    elif args.analysis in ["buffering_ratio", "all"]:
         analyze_buffering_ratio(event_df)

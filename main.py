@@ -1,6 +1,7 @@
 #!.venv/bin/python
 
 import argparse
+from numpy import roll
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt
@@ -13,6 +14,8 @@ EVENT_2 = 12
 EVENT_3 = 1
 EVENT_4 = 4
 MIN_SESSION_DURATION = 6
+PLAYER_PING_MIN = 10 / 60
+
 BASE_URL = (
     "https://raw.githubusercontent.com/brightcove/streaming-dataset/main/datasets/"
 )
@@ -108,10 +111,19 @@ def analyze_fluctuation(event_df: pd.DataFrame) -> None:
     )
 
     # Compute the fluctuation rate per session id
+    df["num_of_changes"] = df.groupby("session").rendition_width.apply(
+        lambda x: x.rolling(2).apply(lambda x: x.iloc[0] < x.iloc[1])
+    )
+
+    out = (
+        df[["session", "num_of_changes"]]
+        .groupby(["session"])
+        .apply(lambda x: x["num_of_changes"].sum() / (len(x) * PLAYER_PING_MIN))
+    )
+
+    print(out.head(n=150))
 
     # Plot the CDF of the fluctuation rate
-
-    print(df.head(n=150))
 
 
 def analyze_rate_rebuffering(event_df: pd.DataFrame) -> None:

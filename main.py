@@ -1,7 +1,6 @@
 #!.venv/bin/python
 
 import argparse
-from numpy import roll
 import pandas as pd
 import seaborn as sns
 import matplotlib.pyplot as plt

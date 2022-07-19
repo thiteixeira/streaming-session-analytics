@@ -120,9 +120,12 @@ def analyze_fluctuation(event_df: pd.DataFrame) -> None:
         .apply(lambda x: x["num_of_changes"].sum() / (len(x) * PLAYER_PING_MIN))
     )
 
-    print(out.head(n=150))
-
     # Plot the CDF of the fluctuation rate
+    ax = sns.ecdfplot(data=out, legend=None)
+    ax.set_title("CDF of Fluctuation Rate")
+    ax.set(xlabel="Fluctuation Rate per Minute", ylabel="CDF")
+    plt.savefig("./assets/cdf_fluctuation.png")
+    plt.show()
 
 
 def analyze_rate_rebuffering(event_df: pd.DataFrame) -> None:

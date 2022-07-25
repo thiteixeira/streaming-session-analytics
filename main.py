@@ -123,7 +123,7 @@ def analyze_fluctuation(event_df: pd.DataFrame) -> None:
     # Plot the CDF of the fluctuation rate
     ax = sns.ecdfplot(data=out, legend=None)
     ax.set_title("CDF of Fluctuation Rate")
-    ax.set(xlabel="Fluctuation Rate per Minute", ylabel="CDF")
+    ax.set(xlabel="Rate of fluctuations (per minute)", ylabel="CDF")
     plt.savefig("./assets/cdf_fluctuation.png")
     plt.show()
 

@@ -13,6 +13,8 @@ EVENT_2 = 12
 EVENT_3 = 1
 EVENT_4 = 4
 MIN_SESSION_DURATION = 6
+PLAYER_PING_MIN = 10 / 60
+
 BASE_URL = (
     "https://raw.githubusercontent.com/brightcove/streaming-dataset/main/datasets/"
 )
@@ -108,10 +110,22 @@ def analyze_fluctuation(event_df: pd.DataFrame) -> None:
     )
 
     # Compute the fluctuation rate per session id
+    df["num_of_changes"] = df.groupby("session").rendition_width.apply(
+        lambda x: x.rolling(2).apply(lambda x: x.iloc[0] < x.iloc[1])
+    )
+
+    out = (
+        df[["session", "num_of_changes"]]
+        .groupby(["session"])
+        .apply(lambda x: x["num_of_changes"].sum() / (len(x) * PLAYER_PING_MIN))
+    )
 
     # Plot the CDF of the fluctuation rate
-
-    print(df.head(n=150))
+    ax = sns.ecdfplot(data=out, legend=None)
+    ax.set_title("CDF of Fluctuation Rate")
+    ax.set(xlabel="Rate of fluctuations (per minute)", ylabel="CDF")
+    plt.savefig("./assets/cdf_fluctuation.png")
+    plt.show()
 
 
 def analyze_rate_rebuffering(event_df: pd.DataFrame) -> None:

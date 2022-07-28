@@ -129,7 +129,34 @@ def analyze_fluctuation(event_df: pd.DataFrame) -> None:
 
 
 def analyze_rate_rebuffering(event_df: pd.DataFrame) -> None:
-    pass
+    """Compute the number of buffering events per minute over the session duration"""
+
+    print("Analyzing fluctuation ...")
+    df = (
+        event_df[["session", "seq", "rebuffering_count"]]
+        .groupby("session")
+        # Filter on session duration >= 6 (one minute)
+        .filter(lambda x: x["seq"].count() >= MIN_SESSION_DURATION)
+        .reset_index(drop=True)
+    )
+
+    # Compute the rebuffering rate per session id
+    df["num_of_changes"] = df.groupby("session").rebuffering_count.apply(
+        lambda x: x.rolling(2).apply(lambda x: x.iloc[0] < x.iloc[1])
+    )
+
+    out = (
+        df[["session", "num_of_changes"]]
+        .groupby(["session"])
+        .apply(lambda x: x["num_of_changes"].sum() / (len(x) * PLAYER_PING_MIN))
+    )
+
+    # Plot the CDF of the fluctuation rate
+    ax = sns.ecdfplot(data=out, legend=None)
+    ax.set_title("CDF of Rebuffering Rate")
+    ax.set(xlabel="Rate of buffering events (per minute)", ylabel="CDF")
+    plt.savefig("./assets/cdf_rebuffering.png")
+    plt.show()
 
 
 def analyze_buffering_ratio(event_df: pd.DataFrame) -> None:

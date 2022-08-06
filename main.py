@@ -160,7 +160,17 @@ def analyze_rate_rebuffering(event_df: pd.DataFrame) -> None:
 
 
 def analyze_buffering_ratio(event_df: pd.DataFrame) -> None:
-    pass
+    """Compute the fraction of time spent in buffering events over the duration of the video session"""
+
+    print("Analyzing buffering ratio ...")
+    df = (
+        event_df[["session", "seq", "rebuffering_seconds", "rebuffering_count"]]
+        .groupby("session")
+        # Filter on session duration >= 6 (one minute)
+        .filter(lambda x: x["seq"].count() >= MIN_SESSION_DURATION)
+        .reset_index(drop=True)
+    )
+    print(df.head(n=200))
 
 
 if __name__ == "__main__":

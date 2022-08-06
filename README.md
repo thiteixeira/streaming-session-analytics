@@ -46,11 +46,13 @@ Calculated as the average bitrate of the requested renditions over time.
 
 How often (per minute) the rendition changes
 
-![CDF of Flluctuation Rate](./assets/cdf_fluctuation.png)
+![CDF of Fluctuation Rate](./assets/cdf_fluctuation.png)
 
 ### Rate of Buffering
 
 The number of buffering events per minute over the session duration
+
+![CDF of Rebuffering Rate](./assets/cdf_rebuffering.png)
 
 ### Buffering Ratio
 
